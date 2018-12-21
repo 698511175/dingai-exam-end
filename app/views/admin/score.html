@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>丁艾-成绩列表</title>
+    <link rel="stylesheet" href="/admin/css/layui.css">
+</head>
+<body>
+<div class="nav" style="margin-bottom: 20px;">
+    <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a><cite>成绩列表</cite></a>
+    </span>
+</div>
+<table class="layui-hide" id="score" lay-filter="classify"></table>
+<script src="/admin/layui.js"></script>
+
+<script>
+    layui.use(['table','element','form','jquery'], function(){
+        var table = layui.table;
+        var element = layui.element;
+        var form = layui.form;
+        var $ = layui.jquery;
+        table.render({
+            elem: '#score'
+            ,url:'/admin/getScore'
+            ,title: '成绩列表'
+            ,limit: 5   // 设置一页默认 条数
+            ,cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                ,{field:'id', title:'ID', width:80, fixed: 'left', unresize: true , sort : true}
+                ,{field:'username', title:'考生', unresize: true}
+                ,{field:'name', title:'试卷名称', unresize: true}
+                ,{field:'score', title:'成绩', unresize: true}
+            ]]
+            ,page: true
+            ,response : {
+                statusCode : 200
+            }
+            ,parseData : function (res) {
+                return {
+                    "code" : res.code,
+                    "msg" : res.msg,
+                    "count" : res.data.count,
+                    "data" : res.data.lists
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

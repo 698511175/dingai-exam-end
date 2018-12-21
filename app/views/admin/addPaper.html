@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>丁艾-创建试卷</title>
+    <link rel="stylesheet" href="/admin/css/layui.css">
+</head>
+<body>
+<div class="nav" style="margin-bottom: 20px;">
+    <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">试卷管理</a>
+        <a><cite>创建试卷</cite></a>
+    </span>
+</div>
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">试卷名称</label>
+        <div class="layui-input-inline">
+            <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入名称" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">试卷描述</label>
+        <div class="layui-input-block">
+            <textarea name="description" placeholder="请输入描述内容" class="layui-textarea"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">开始时间</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" id="start_time" name="start_time">
+        </div>
+        <label class="layui-form-label">结束时间</label>
+        <div class="layui-input-inline">
+            <input type="text" class="layui-input" id="end_time" name="end_time">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">考试时长</label>
+        <div class="layui-input-inline">
+            <input type="text" name="duration" lay-verify="required" autocomplete="off" placeholder="请输入名称" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">用户分类</label>
+        <div class="layui-input-inline">
+            <select name="group_id" lay-verify="" lay-filter="type">
+                <% for(var i = 0 ; i < users_data.length ; i++){ %>
+                <option value="<%=users_data[i].id %>"><%= users_data[i].classname %></option>
+                <% } %>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">是否启用</label>
+        <div class="layui-input-block">
+            <input type="checkbox" name="is_enable" value="1" checked lay-skin="switch" lay-text="启用|禁用">
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">题库分类</label>
+        <div class="layui-input-inline">
+            <select name="classify_id" lay-verify="" lay-filter="type">
+                <% for(var i = 0 ; i < classify_data.length ; i++){ %>
+                <option value="<%= classify_data[i].id %>"><%= classify_data[i].classname %></option>
+                <% } %>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">单选题数量</label>
+        <div class="layui-input-inline">
+            <input type="text" name="choice_singleN" autocomplete="off" placeholder="请输入单选题数量" class="layui-input">
+        </div>
+        <label class="layui-form-label">单选题分值</label>
+        <div class="layui-input-inline">
+            <input type="text" name="choice_singleS" autocomplete="off" placeholder="请输入单选题分值" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">多选题数量</label>
+        <div class="layui-input-inline">
+            <input type="text" name="choice_doubleN" autocomplete="off" placeholder="请输入多选题数量" class="layui-input">
+        </div>
+        <label class="layui-form-label">多选题分值</label>
+        <div class="layui-input-inline">
+            <input type="text" name="choice_doubleS" autocomplete="off" placeholder="请输入多选题分值" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">判断题数量</label>
+        <div class="layui-input-inline">
+            <input type="text" name="judge_N" autocomplete="off" placeholder="请输入多选题数量" class="layui-input">
+        </div>
+        <label class="layui-form-label">判断题分值</label>
+        <div class="layui-input-inline">
+            <input type="text" name="judge_S" autocomplete="off" placeholder="请输入判断题数值" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="addPaper">提交添加</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script src="/admin/layui.js"></script>
+<script>
+    layui.use(['form','element','layer','jquery','laydate'], function(){
+        var element = layui.element;
+        var layer = layui.layer;
+        var form = layui.form;
+        var $ = layui.jquery;
+        var laydate = layui.laydate;
+        //下拉日期
+        laydate.render({
+            //指定开始日期
+            elem: '#start_time',
+            value:new Date(),
+            format:'yyyy-M-d',
+            done: function(value, date, endDate){
+                laydate.render({
+                    //指定结束日期
+                    elem: '#end_time',
+                    value:value,
+                });
+            }
+        });
+        laydate.render({
+            //指定结束日期
+            elem: '#end_time',
+            value:new Date()
+        });
+        //监听提交
+        form.on('submit(addPaper)', function(data){
+            if(!data.field.is_enable){
+                data.field.is_enable = 0;
+            }
+            $.ajax({
+                url:"/admin/addPaper",
+                type:"POST",
+                data:data.field,
+                success:function (data) {
+                    if (data.code == 200){
+                        layer.msg(data.msg,{time:1000},function () {
+                            location.href = data.data.url
+                        })
+                    }else {
+                        layer.msg(data.msg,{time:1000})
+                    }
+                }
+            })
+            return false
+        });
+    });
+</script>
+
+</body>
+</html>

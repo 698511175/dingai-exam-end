@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>丁艾-编辑试题</title>
+    <link rel="stylesheet" href="/admin/css/layui.css">
+</head>
+<body>
+<div class="nav" style="margin-bottom: 20px;">
+    <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">题库列表</a>
+        <a><cite>编辑试题</cite></a>
+    </span>
+</div>
+<form class="layui-form" action="">
+    <input type="hidden" name="id" value="<%= topic_data[0].id %>">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">题目分类</label>
+        <div class="layui-input-inline">
+            <select name="classify_id" >
+                <% for(var i =0 ; i<classify_data.length ; i++){%>
+                <option value="<%= classify_data[i].id %>" <% if(classify_data[i].id == topic_data[0].classify_id){ %> selected <% } %>><%= classify_data[i].classname %></option>
+                <% } %>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">题目类型</label>
+        <div class="layui-input-inline">
+            <select name="type" lay-verify="" lay-filter="type" disabled>
+                <% if(topic_data[0].type == 1){ %>
+                <option value="1" selected>单选题</option>
+                <% }else if(topic_data[0].type == 2){%>
+                <option value="2" selected>多选题</option>
+                <% }else{ %>
+                <option value="3" selected>判断题</option>
+                <% } %>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">难度</label>
+        <div class="layui-input-inline">
+            <select name="level" lay-verify="">
+                <option value="1"  <% if(topic_data[0].level == 1){ %>selected<% } %>>入门</option>
+                <option value="2"  <% if(topic_data[0].level == 2){ %>selected<% } %>>初级</option>
+                <option value="3"  <% if(topic_data[0].level == 3){ %>selected<% } %>>中级</option>
+                <option value="4"  <% if(topic_data[0].level == 4){ %>selected<% } %>>高级</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">题目</label>
+        <div class="layui-input-block">
+            <textarea name="stem" placeholder="请输入题干内容" lay-verify="required" class="layui-textarea"><%= topic_data[0].stem %></textarea>
+        </div>
+    </div>
+    <% if(!(topic_data[0].type==3)){ %>
+    <div class="layui-form-item layui-form-text choice_for">
+        <label class="layui-form-label">选项</label>
+        <div class="layui-input-block">
+            <input type="text" name="choice_forA"  placeholder="请输入A选项" autocomplete="off" class="layui-input" value="<%= topic_data[0].a %>">
+            <input type="text" name="choice_forB"  placeholder="请输入B选项" autocomplete="off" class="layui-input" value="<%= topic_data[0].b %>">
+            <input type="text" name="choice_forC"  placeholder="请输入C选项" autocomplete="off" class="layui-input" value="<%= topic_data[0].c %>">
+            <input type="text" name="choice_forD"  placeholder="请输入D选项" autocomplete="off" class="layui-input" value="<%= topic_data[0].d %>">
+        </div>
+    </div>
+    <% } %>
+    <div class="layui-form-item layui-form-text answer">
+        <label class="layui-form-label">答案</label>
+        <% if(topic_data[0].type ==1){ %>
+        <div class="layui-input-inline choice_one">
+            <input type="radio" name="answ_c1" value="A" title="A" <% if(topic_data[0].answer=='A'){ %>checked<% } %>>
+            <input type="radio" name="answ_c1" value="B" title="B" <% if(topic_data[0].answer=='B'){ %>checked<% } %>>
+            <input type="radio" name="answ_c1" value="C" title="C" <% if(topic_data[0].answer=='C'){ %>checked<% } %>>
+            <input type="radio" name="answ_c1" value="D" title="D" <% if(topic_data[0].answer=='D'){ %>checked<% } %>>
+        </div>
+        <% }else if(topic_data[0].type ==2){ %>
+        <% var ans = topic_data[0].answer.split("") %>
+        <div class="layui-input-inline choice_more">
+            <input type="checkbox" name="answ_c2A" value="A" title="A" lay-skin="primary" <% if(ans.indexOf('A')>=0){ %>checked<% } %>>
+            <input type="checkbox" name="answ_c2B" value="B" title="B" lay-skin="primary" <% if(ans.indexOf('B')>=0){ %>checked<% } %>>
+            <input type="checkbox" name="answ_c2C" value="C" title="C" lay-skin="primary" <% if(ans.indexOf('C')>=0){ %>checked<% } %>>
+            <input type="checkbox" name="answ_c2D" value="D" title="D" lay-skin="primary" <% if(ans.indexOf('D')>=0){ %>checked<% } %>>
+        </div>
+        <% }else{ %>
+        <div class="layui-input-inline judge">
+            <input type="radio" name="answ_j" value="1" title="TRUE" <% if(topic_data[0].answer=='1'){ %>checked<% } %>>
+            <input type="radio" name="answ_j" value="0" title="FALSE" <% if(topic_data[0].answer=='0'){ %>checked<% } %>>
+        </div>
+        <% } %>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">是否启用</label>
+        <div class="layui-input-block">
+            <input type="checkbox" name="status" value="1" checked lay-skin="switch" lay-text="启用|禁用">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="editTopic">提交修改</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script src="/admin/layui.js"></script>
+
+
+<script>
+    layui.use(['form','element','layer','jquery'], function(){
+        var element = layui.element;
+        var layer = layui.layer;
+        var form = layui.form;
+        var $ = layui.jquery;
+        // 监听试题类型选择框
+        var $answer = $('.answer')
+        var $choice = $('.choice_for')
+        form.on('select(type)', function(data){
+            switch(data.value*1){
+                case 1:
+                    $answer.find(".layui-input-inline").css("display","none").filter(".choice_one").css("display","block");
+                    $choice.css("display","block");
+                    break;
+                case 2:
+                    $answer.find(".layui-input-inline").css("display","none").filter(".choice_more").css("display","block");
+                    $choice.css("display","block");
+                    break;
+                case 3:
+                    $answer.find(".layui-input-inline").css("display","none").filter(".judge").css("display","block");
+                    $choice.css("display","none");
+                    break;
+            }
+        });
+
+        //监听提交
+        form.on('submit(editTopic)', function(data){
+            if(!data.field.status){
+                data.field.status = 0;
+            }
+            $.ajax({
+                url:"/admin/editTopic?id=" + data.field.id + "&type=" + data.field.type,
+                type:"PUT",
+                data:data.field,
+                success:function (data) {
+                    if (data.code == 200){
+                        layer.msg(data.msg,{time:1000},function () {
+                            location.href = data.data.url
+                        })
+                    }else {
+                        layer.msg(data.msg,{time:1000})
+                    }
+                }
+            })
+            return false
+        });
+    });
+</script>
+
+</body>
+</html>

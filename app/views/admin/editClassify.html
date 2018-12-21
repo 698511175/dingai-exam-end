@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>丁艾-修改分类</title>
+    <link rel="stylesheet" href="/admin/css/layui.css">
+</head>
+<body>
+<div class="nav" style="margin-bottom: 20px;">
+    <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">题库管理</a>
+        <a><cite>添加题库分类</cite></a>
+    </span>
+</div>
+<form class="layui-form" action="">
+    <input type="hidden" name="id" value="<%= data.id %>">
+    <div class="layui-form-item">
+        <label class="layui-form-label">分类名称</label>
+        <div class="layui-input-inline">
+            <input type="text" name="classname" lay-verify="required" autocomplete="off" value="<%= data.classname %>" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">分类描述</label>
+        <div class="layui-input-block">
+            <textarea name="description" placeholder="请输入描述内容" class="layui-textarea"><%= data.description %></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">是否启用</label>
+        <div class="layui-input-block">
+            <input type="checkbox" name="is_enable" value="1"  <% if(data.is_enable==1){ %>checked <% } %> lay-skin="switch" lay-text="启用|禁用">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="editClassify">提交添加</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script src="/admin/layui.js"></script>
+
+
+<script>
+    layui.use(['form','element','layer','jquery'], function(){
+        var element = layui.element;
+        var layer = layui.layer;
+        var form = layui.form;
+        var $ = layui.jquery;
+        //监听提交
+        form.on('submit(editClassify)', function(data){
+            if(!data.field.is_enable){
+                data.field.is_enable = 0;
+            }
+            $.ajax({
+                url:"/admin/editClassify?id=" + data.field.id,
+                type:"PUT",
+                data:data.field,
+                success:function (d) {
+                    if (d.code == 200){
+                        layer.msg(d.msg,{time:1000},function () {
+                            location.href = d.data.url
+                        })
+                    }else {
+                        layer.msg(d.msg,{time:1000})
+                    }
+                }
+            })
+            return false
+        });
+    });
+</script>
+
+</body>
+</html>

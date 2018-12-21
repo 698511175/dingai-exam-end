@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>丁艾-试卷列表</title>
+    <link rel="stylesheet" href="/admin/css/layui.css">
+</head>
+<body>
+<div class="nav" style="margin-bottom: 20px;">
+    <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">题库管理</a>
+        <a><cite>题库列表</cite></a>
+    </span>
+</div>
+<table class="layui-hide" id="topic" lay-filter="classify"></table>
+<script src="/admin/layui.js"></script>
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <a class="layui-btn layui-btn-sm" href="/admin/addTopic">添加试题</a>
+    </div>
+</script>
+<script type="text/html" id="barDemo">
+    <a href="/admin/editTopic?id={{d.id}}&type={{d.type}}" class="layui-btn layui-btn-xs">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+    layui.use(['table','element','form','jquery'], function(){
+        var table = layui.table;
+        var element = layui.element;
+        var form = layui.form;
+        var $ = layui.jquery;
+        table.render({
+            elem: '#topic'
+            ,url:'/admin/getTopic'
+            ,toolbar: '#toolbarDemo'
+            ,title: '试题列表'
+            ,limit: 5   // 设置一页默认 条数
+            ,cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                ,{field:'id', title:'ID', width:80, fixed: 'left', unresize: true , sort : true}
+                ,{field:'stem', title:'题干', unresize: true}
+                ,{field:'type', title:'类型', unresize: true, templet : function (res) {
+                        var types = {
+                            1:"单选题",
+                            2:"多选题",
+                            3:"判断题"
+                        };
+                        return '<em>' + types[res.type] + '</em>'
+                    }}
+                ,{field:'classname', title:'分类', unresize: true}
+                ,{field:'status', title:'是否启用', unresize: true , templet : function (res) {
+                        return '<input data-id="'+res.id+'" data-type="' + res.type + '" '+ (res.status ==1 ?"checked":"")  +'   type="checkbox" lay-filter="status" lay-skin="switch" lay-text="启用|禁用">'
+                    }}
+                ,{field:'level', title:'难度', unresize: true, templet : function (res) {
+                        var types = {
+                            1:"入门",
+                            2:"初级",
+                            3:"中级",
+                            4:"高级"
+                        };
+                        return '<em>' + types[res.level] + '</em>'
+                    }}
+                ,{field:'update_at', title:'更新时间', unresize: true ,templet : function (res) {
+                        var data = new Date(res.update_at * 1);
+                        var d = [data.getFullYear(),data.getMonth()+1,data.getDate()].join('-');
+                        return '<em>'+ d + '</em>'
+                    }}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:150, unresize: true}
+            ]]
+            ,page: true
+            ,response : {
+                statusCode : 200
+            }
+            ,parseData : function (res) {
+                return {
+                    "code" : res.code,
+                    "msg" : res.msg,
+                    "count" : res.data.count,
+                    "data" : res.data.lists
+                }
+            }
+        });
+        //监听行工具事件
+        table.on('tool(classify)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){
+                layer.confirm('真的删除这行么', function(index){
+                    $.ajax({
+                        url:"/admin/delTopic?id=" + data.id + "&type=" + data.type,
+                        type:"DELETE",
+                        success:function (data) {
+                            if (data.code == 200){
+                                layer.msg(data.msg,{time:1000})
+                                obj.del();  // 删除前台行
+                            }else {
+                                layer.msg(data.msg,{time:1000})
+                            }
+                            layer.close(index);
+                        }
+                    })
+                });
+            }
+        });
+        form.on('switch(status)', function(data){
+            var id = $(data.elem).attr('data-id')
+            var type = $(data.elem).attr('data-type')
+            $.ajax({
+                url:"/admin/editTopic?id=" + id + "&type=" + type,
+                type:"PUT",
+                data:{
+                    status:data.elem.checked?1:0
+                },
+                success:function (data) {
+                    if (data.code == 200){
+                        layer.msg(data.msg,{time:1000})
+                    }else {
+                        layer.msg(data.msg,{time:1000})
+                    }
+                }
+            })
+        });
+    });
+</script>
+
+</body>
+</html>
